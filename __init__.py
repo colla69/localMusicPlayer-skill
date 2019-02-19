@@ -22,21 +22,30 @@ def next_player():
 def search_player(text):
     os.system('cmus-remote -C "/' + text+'"')
     os.system('cmus-remote -C "win-activate"')
-    # os.system("cmus-remote -n")
 
 
-class CmusPlayerSkill(MycroftSkill):
+def refresh_library(path):
+    os.system('cmus-remote -C clear')
+    LOG.info('reloading music files from: '+path)
+    os.system('cmus-remote -C "add '+path+'"')
+
+
+class Localmusicplayer(MycroftSkill):
 
     def __init__(self):
-        super(CmusPlayerSkill, self).__init__(name="TemplateSkill")
+        super(Localmusicplayer, self).__init__(name="TemplateSkill")
         # Initialize working variables used within the skill.
+        self.music_source = self.settings.get("musicsource", "")
+
         self.start_player()
+        refresh_library(self.music_source)
         self.running = True
 
     @intent_file_handler('play.music.intent')
     def handle_play_music_ntent(self, message):
         if not self.running:
             self.start_player()
+            self.refresh_library()
         play_player()
 
     @intent_file_handler('pause.music.intent')
@@ -62,16 +71,11 @@ class CmusPlayerSkill(MycroftSkill):
         # no stdout > cmus idles using 15 to 20 % CPU
         time.sleep(1)
 
-
     def stop_player(self):
         self.running = False
         os.system("cmus-remote -C quit")
-        # os.system("killall cmus")
 
     def converse(self, utterances, lang="en-us"):
-        # contains all triggerwords for second layer Intents
-        LOG.info(self.dictation_words)
-        ####
         return False
 
     def stop(self):
@@ -80,4 +84,4 @@ class CmusPlayerSkill(MycroftSkill):
 
 
 def create_skill():
-    return CmusPlayerSkill()
+    return Localmusicplayer()
