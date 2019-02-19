@@ -40,7 +40,7 @@ class Localmusicplayer(MycroftSkill):
         super(Localmusicplayer, self).__init__(name="TemplateSkill")
         # Initialize working variables used within the skill.
         self.music_source = self.settings.get("musicsource", "")
-
+        # init cmus player
         self.start_player()
         refresh_library(self.music_source)
         self.running = True
@@ -55,6 +55,10 @@ class Localmusicplayer(MycroftSkill):
     @intent_file_handler('pause.music.intent')
     def handle_pause_music_intent(self, message):
         pause_player()
+
+    @intent_file_handler('reload.library.intent')
+    def handle_reload_library_intent(self, message):
+        refresh_library(self.music_source)
 
     @intent_file_handler('next.music.intent')
     def handle_next_music_intent(self, message):
