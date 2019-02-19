@@ -15,6 +15,10 @@ def pause_player():
     os.system("cmus-remote -u")
 
 
+def next_player():
+    os.system("cmus-remote -n")
+
+
 def search_player(text):
     os.system('cmus-remote -C "/' + text+'"')
     os.system('cmus-remote -C "win-activate"')
@@ -38,6 +42,10 @@ class CmusPlayerSkill(MycroftSkill):
     @intent_file_handler('pause.music.intent')
     def handle_pause_music_intent(self, message):
         pause_player()
+
+    @intent_file_handler('next.music.intent')
+    def handle_next_music_intent(self, message):
+        next_player()
 
     @intent_handler(IntentBuilder("search.music.intent").require("search.music").require("SongToPlay").build())
     def handle_search_music_intent(self, message):
