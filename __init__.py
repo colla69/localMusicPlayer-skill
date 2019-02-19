@@ -19,6 +19,10 @@ def next_player():
     os.system("cmus-remote -n")
 
 
+def prev_player():
+    os.system("cmus-remote -N")
+
+
 def search_player(text):
     os.system('cmus-remote -C "/' + text+'"')
     os.system('cmus-remote -C "win-activate"')
@@ -55,6 +59,10 @@ class Localmusicplayer(MycroftSkill):
     @intent_file_handler('next.music.intent')
     def handle_next_music_intent(self, message):
         next_player()
+
+    @intent_file_handler('prev.music.intent')
+    def handle_prev_music_intent(self, message):
+        prev_player()
 
     @intent_handler(IntentBuilder("search.music.intent").require("search.music").require("SongToPlay").build())
     def handle_search_music_intent(self, message):
