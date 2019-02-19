@@ -1,5 +1,6 @@
 {
     "utterance": "refresh library",
     "intent_type": "refresh.library.intent",
-    "expected_response": "refreshing library"
+    "expected_response": "refreshing library",
+    "expected_dialog": "refresh.library"
 }

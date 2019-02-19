@@ -33,6 +33,7 @@ def refresh_library(path):
     LOG.info('reloading music files from: '+path)
     os.system('cmus-remote -C "add '+path+'"')
 
+# TODO GetPlayerRunning implementieren
 
 class Localmusicplayer(MycroftSkill):
 
@@ -43,7 +44,6 @@ class Localmusicplayer(MycroftSkill):
         # init cmus player
         self.start_player()
         refresh_library(self.music_source)
-        self.running = True
 
     @intent_file_handler('play.music.intent')
     def handle_play_music_ntent(self, message):
