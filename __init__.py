@@ -59,6 +59,7 @@ class Localmusicplayer(MycroftSkill):
     @intent_file_handler('reload.library.intent')
     def handle_reload_library_intent(self, message):
         refresh_library(self.music_source)
+        self.speak_dialog("refresh.library")
 
     @intent_file_handler('next.music.intent')
     def handle_next_music_intent(self, message):
