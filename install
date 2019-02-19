@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm -rf /opt/mycroft/skills/cmus-skill.colla
+
+mkdir /opt/mycroft/skills/cmus-skill.colla
+
+cp -r ~/sandbox/cmus-skill/* /opt/mycroft/skills/cmus-skill.colla/

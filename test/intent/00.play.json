@@ -1,0 +1,5 @@
+{
+    "utterance": "Play my music",
+    "intent_type": "play.music.intent",
+    "expected_response": ""
+}

@@ -1,0 +1,5 @@
+{
+    "utterance": "pause music",
+    "intent_type": "pause.music.intent",
+    "expected_response": ""
+}
