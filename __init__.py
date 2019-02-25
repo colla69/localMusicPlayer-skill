@@ -35,11 +35,15 @@ def refresh_library(path):
 
 
 def show_player():
-    os.system('x-terminal-emulator -e "screen -r cmus"')
+    os.system('x-terminal-emulator -e "screen -r " ')
 
 
 def getrunning():
-    return os.system('ps ax | grep cmus | grep -v " grep"') != ""
+    check = os.system('ps ax | grep cmus | grep -v " grep"')
+    if check == "":
+        return False
+    else:
+        return True
 
 
 class Localmusicplayer(MycroftSkill):
@@ -49,8 +53,7 @@ class Localmusicplayer(MycroftSkill):
         # Initialize working variables used within the skill.
         self.music_source = self.settings.get("musicsource", "")
         # init cmus player
-        self.start_player()
-        refresh_library(self.music_source)
+        self.activate_player()
 
     @intent_file_handler('play.music.intent')
     def handle_play_music_ntent(self, message):
@@ -89,7 +92,8 @@ class Localmusicplayer(MycroftSkill):
         search_player(songtoplay)
 
     def start_player(self):
-        os.system("screen -d -m -S cmus cmus")
+        os.system("screen -d -m -S cmus cmus &")
+        LOG.debug("staring cmus....")
         # os.system("cmus  </dev/null>/dev/null 2>&1 &")
         # no stdout > cmus idles using 15 to 20 % CPU
         time.sleep(1)
@@ -98,15 +102,15 @@ class Localmusicplayer(MycroftSkill):
         os.system("cmus-remote -C quit")
 
     def activate_player(self):
-        if not getrunning():
+        if getrunning():
             self.start_player()
-            self.refresh_library()
+            refresh_library(self.music_source)
 
     def converse(self, utterances, lang="en-us"):
         return False
 
     def stop(self):
-        if self.running:
+        if not getrunning():
             self.stop_player()
 
 
