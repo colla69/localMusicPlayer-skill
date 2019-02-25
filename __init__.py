@@ -40,7 +40,7 @@ def show_player():
 
 
 def getrunning():
-    check = os.popen('cmus-remote -Q | grep "shuffle" |  tail -c 5').readlines()
+    check = os.popen('ps ax | grep cmus | grep -v " grep"').readlines()
     if len(check) == 0:
         return False
     else:
@@ -48,12 +48,11 @@ def getrunning():
 
 
 def shufflin():
-    check = os.popen('ps ax | grep cmus | grep -v " grep"').readlines()
-    LOG.info(check)
-    if len(check) == 0:
-        return False
-    else:
+    check = os.popen('cmus-remote -Q | grep "shuffle" |  tail -c 5').readlines()
+    if check[0] == "true\n":
         return True
+    else:
+        return False
 
 
 class Localmusicplayer(MycroftSkill):
@@ -110,8 +109,9 @@ class Localmusicplayer(MycroftSkill):
 
     def start_player(self):
         os.system("screen -d -m -S cmus cmus &")
-        os.system("screen -d -m -S cmus cmus &")
+        time.sleep(1)
         # config player for usage
+        os.system('cmus-remote -C "view 2"')
         os.system('cmus-remote -C "set softvol_state=70 70"')
         os.system('cmus-remote -C "set continue=true"')
         time.sleep(1)
