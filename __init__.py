@@ -8,6 +8,7 @@ __author__ = 'colla69'
 
 
 def play_player():
+    os.system('cmus-remote -C "add -p"')
     os.system("cmus-remote -p")
 
 
@@ -39,8 +40,17 @@ def show_player():
 
 
 def getrunning():
-    check = os.system('ps ax | grep cmus | grep -v " grep"')
-    if check == "":
+    check = os.popen('cmus-remote -Q | grep "shuffle" |  tail -c 5').readlines()
+    if len(check) == 0:
+        return False
+    else:
+        return True
+
+
+def shufflin():
+    check = os.popen('ps ax | grep cmus | grep -v " grep"').readlines()
+    LOG.info(check)
+    if len(check) == 0:
         return False
     else:
         return True
@@ -67,8 +77,15 @@ class Localmusicplayer(MycroftSkill):
 
     @intent_file_handler('reload.library.intent')
     def handle_reload_library_intent(self, message):
-        self.activate_player()
+        refresh_library(self.music_source)
         self.speak_dialog("refresh.library")
+
+    @intent_file_handler('shuffling.library.intent')
+    def handle_shuffling_library_intent(self, message):
+        if shufflin():
+            self.speak("yes")
+        else:
+            self.speak("no")
 
     @intent_file_handler('next.music.intent')
     def handle_next_music_intent(self, message):
@@ -93,16 +110,17 @@ class Localmusicplayer(MycroftSkill):
 
     def start_player(self):
         os.system("screen -d -m -S cmus cmus &")
-        LOG.debug("staring cmus....")
-        # os.system("cmus  </dev/null>/dev/null 2>&1 &")
-        # no stdout > cmus idles using 15 to 20 % CPU
+        os.system("screen -d -m -S cmus cmus &")
+        # config player for usage
+        os.system('cmus-remote -C "set softvol_state=70 70"')
+        os.system('cmus-remote -C "set continue=true"')
         time.sleep(1)
 
     def stop_player(self):
         os.system("cmus-remote -C quit")
 
     def activate_player(self):
-        if getrunning():
+        if not getrunning():
             self.start_player()
             refresh_library(self.music_source)
 
@@ -110,7 +128,7 @@ class Localmusicplayer(MycroftSkill):
         return False
 
     def stop(self):
-        if not getrunning():
+        if getrunning():
             self.stop_player()
 
 
