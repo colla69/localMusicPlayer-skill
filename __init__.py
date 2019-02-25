@@ -33,7 +33,14 @@ def refresh_library(path):
     LOG.info('reloading music files from: '+path)
     os.system('cmus-remote -C "add '+path+'"')
 
-# TODO GetPlayerRunning implementieren
+
+def show_player():
+    os.system('x-terminal-emulator -e "screen -r cmus"')
+
+
+def getrunning():
+    return os.system('ps ax | grep cmus | grep -v " grep"') != ""
+
 
 class Localmusicplayer(MycroftSkill):
 
@@ -47,46 +54,53 @@ class Localmusicplayer(MycroftSkill):
 
     @intent_file_handler('play.music.intent')
     def handle_play_music_ntent(self, message):
-        if not self.running:
-            self.start_player()
-            self.refresh_library()
+        self.activate_player()
         play_player()
 
     @intent_file_handler('pause.music.intent')
     def handle_pause_music_intent(self, message):
+        self.activate_player()
         pause_player()
 
     @intent_file_handler('reload.library.intent')
     def handle_reload_library_intent(self, message):
-        refresh_library(self.music_source)
+        self.activate_player()
         self.speak_dialog("refresh.library")
 
     @intent_file_handler('next.music.intent')
     def handle_next_music_intent(self, message):
+        self.activate_player()
         next_player()
 
     @intent_file_handler('prev.music.intent')
     def handle_prev_music_intent(self, message):
+        self.activate_player()
         prev_player()
+
+    @intent_file_handler('show.music.intent')
+    def handle_show_music_intent(self, message):
+        self.activate_player()
+        show_player()
 
     @intent_handler(IntentBuilder("search.music.intent").require("search.music").require("SongToPlay").build())
     def handle_search_music_intent(self, message):
         songtoplay = message.data.get("SongToPlay")
-        LOG.info(songtoplay)
-        if not self.running:
-            self.start_player()
+        self.activate_player()
         search_player(songtoplay)
 
     def start_player(self):
-        self.running = True
         os.system("screen -d -m -S cmus cmus")
         # os.system("cmus  </dev/null>/dev/null 2>&1 &")
         # no stdout > cmus idles using 15 to 20 % CPU
         time.sleep(1)
 
     def stop_player(self):
-        self.running = False
         os.system("cmus-remote -C quit")
+
+    def activate_player(self):
+        if not getrunning():
+            self.start_player()
+            self.refresh_library()
 
     def converse(self, utterances, lang="en-us"):
         return False
