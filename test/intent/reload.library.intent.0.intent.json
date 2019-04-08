@@ -1,5 +1,0 @@
-{
-    "expected_dialog": "refresh.library",
-    "intent_type": "reload.library.intent",
-    "utterance": "update library"
-}
