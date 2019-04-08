@@ -15,21 +15,21 @@ dist=$(lsb_release -ds)
 dependencies=( screen, cmus )
 
 # setting dependencies and package manager in relation to the distribution
-  if $(hash pkcon 2>/dev/null); then
-     pm="pkcon"
- else
+#  if $(hash pkcon 2>/dev/null); then
+#     pm="pkcon"
+# else
      priv="sudo"
      if [ "$dist"  == "\"Arch Linux\""  ]; then
          pm="pacman -S"
-         dependencies=( aaa )
+         #dependencies=( aaa )
      elif [[ "$dist" =~  "Ubuntu" ]] || [[ "$dist" =~ "Debian" ]] ||[[ "$dist" =~ "Raspbian" ]]; then
          pm="apt install"
-         dependencies=( bbb)
+         #dependencies=( bbb)
      elif [[ "$dist" =~ "SUSE" ]]; then
          pm="zypper install"
-         dependencies=( ccc )
+         #dependencies=( ccc )
      fi
- fi
+# fi
 
 # installing dependencies
  if [ ! -z "$pm" ]; then
