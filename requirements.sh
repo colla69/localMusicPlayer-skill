@@ -35,6 +35,6 @@ dependencies=( screen, cmus )
  if [ ! -z "$pm" ]; then
      for dep in "${dependencies[@]}"
     do
-        $priv $pm $dep
+        $pm $dep
     done
  fi
