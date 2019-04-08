@@ -1,0 +1,3 @@
+[submodule "localMusicPlayer-skill"]
+	path = localMusicPlayer-skill
+	url = https://github.com/colla69/mycroft-skills
