@@ -11,7 +11,7 @@ This Mycroft skill can control the cmus player with speech commands.
     `sudo apt install cmus`<br/>
     
 ### Install
-  `msm install https://github.com/colla69/localmusicplayer-skill`
+  `msm install https://github.com/colla69/localmusicplayer-skill.git`
   
 ### Examples
  - "Hey mycroft, play my music!"
