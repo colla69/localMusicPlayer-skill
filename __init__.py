@@ -8,7 +8,6 @@ __author__ = 'colla69'
 
 
 def play_player():
-    os.system('cmus-remote -C "add -p"')
     os.system("cmus-remote -p")
 
 
@@ -55,6 +54,13 @@ def shufflin():
         return False
 
 
+def changeshuffling():
+    if shufflin():
+        os.system('cmus-remote -C "set shuffle=false"')
+    else:
+        os.system('cmus-remote -C "set shuffle=true"')
+
+
 class Localmusicplayer(MycroftSkill):
 
     def __init__(self):
@@ -63,6 +69,12 @@ class Localmusicplayer(MycroftSkill):
         self.music_source = self.settings.get("musicsource", "")
         # init cmus player
         self.activate_player()
+
+    def getspoken_shufflestate(self):
+        if shufflin():
+            self.speak("active")
+        else:
+            self.speak("nonoperational")
 
     @intent_file_handler('play.music.intent')
     def handle_play_music_ntent(self, message):
@@ -81,10 +93,7 @@ class Localmusicplayer(MycroftSkill):
 
     @intent_file_handler('shuffling.library.intent')
     def handle_shuffling_library_intent(self, message):
-        if shufflin():
-            self.speak("yes")
-        else:
-            self.speak("no")
+        self.getspoken_shufflestate()
 
     @intent_file_handler('next.music.intent')
     def handle_next_music_intent(self, message):
@@ -101,6 +110,11 @@ class Localmusicplayer(MycroftSkill):
         self.activate_player()
         show_player()
 
+    @intent_file_handler('change.shuffling.music.intent')
+    def handle_change_shuffle_music_intent(self, message):
+        changeshuffling()
+        self.getspoken_shufflestate()
+
     @intent_handler(IntentBuilder("search.music.intent").require("search.music").require("SongToPlay").build())
     def handle_search_music_intent(self, message):
         songtoplay = message.data.get("SongToPlay")
@@ -115,6 +129,7 @@ class Localmusicplayer(MycroftSkill):
         os.system('cmus-remote -C "set softvol_state=70 70"')
         os.system('cmus-remote -C "set continue=true"')
         time.sleep(1)
+        refresh_library(self.music_source)
 
     def stop_player(self):
         os.system("cmus-remote -C quit")
@@ -129,7 +144,7 @@ class Localmusicplayer(MycroftSkill):
 
     def stop(self):
         if getrunning():
-            self.stop_player()
+          Dedw3232weqrF  self.stop_player()
 
 
 def create_skill():
