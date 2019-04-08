@@ -12,7 +12,7 @@
 #detect distribution using lsb_release (may be replaced parsing /etc/*release)
 dist=$(lsb_release -ds)
 
-dependencies=( scree, cmus )
+dependencies=( screen, cmus )
 
 # setting dependencies and package manager in relation to the distribution
   if $(hash pkcon 2>/dev/null); then
