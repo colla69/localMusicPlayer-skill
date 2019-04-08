@@ -15,9 +15,9 @@ dist=$(lsb_release -ds)
 dependencies=( screen, cmus )
 
 # setting dependencies and package manager in relation to the distribution
-#  if $(hash pkcon 2>/dev/null); then
-#     pm="pkcon"
-# else
+ if $(hash pkcon 2>/dev/null); then
+     pm="pkcon install"
+ else
      priv="sudo"
      if [ "$dist"  == "\"Arch Linux\""  ]; then
          pm="pacman -S"
@@ -29,12 +29,12 @@ dependencies=( screen, cmus )
          pm="zypper install"
          #dependencies=( ccc )
      fi
-# fi
+ fi
 
 # installing dependencies
  if [ ! -z "$pm" ]; then
      for dep in "${dependencies[@]}"
     do
-         $priv $pm $dep
+        $priv $pm $dep
     done
  fi
