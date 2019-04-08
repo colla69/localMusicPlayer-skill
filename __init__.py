@@ -144,7 +144,7 @@ class Localmusicplayer(MycroftSkill):
 
     def stop(self):
         if getrunning():
-          Dedw3232weqrF  self.stop_player()
+          self.stop_player()
 
 
 def create_skill():
