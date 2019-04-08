@@ -1,5 +1,6 @@
 {
     "utterance": "pause music",
     "intent_type": "pause.music.intent",
-    "responses": ["nonoperational", "active"]
+    "responses": ["nonoperational", "active"],
+    "evaluation_timeout": 10
 }

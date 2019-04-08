@@ -1,5 +1,6 @@
 {
     "utterance": "Play my music",
     "intent_type": "play.music.intent",
-    "expected_response": ""
+    "expected_response": "",
+    "evaluation_timeout": 10
 }

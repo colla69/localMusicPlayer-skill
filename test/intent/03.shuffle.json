@@ -2,5 +2,5 @@
     "utterance": "shuffle status",
     "intent_type": "shuffling.library.intent",
     "expected_response": "",
-    "expected_dialog": ""
+    "evaluation_timeout": 10
 }
