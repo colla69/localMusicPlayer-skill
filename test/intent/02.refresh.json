@@ -1,6 +1,0 @@
-{
-    "utterance": "refresh library",
-    "intent_type": "refresh.library.intent",
-    "expected_dialog": "refresh.library",
-    "evaluation_timeout": 10
-}
