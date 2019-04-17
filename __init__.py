@@ -3,6 +3,7 @@ import time
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_file_handler, intent_handler
 from mycroft.util.log import LOG
+from mycroft.skills.common_play_skill import CommonPlaySkill, CPSMatchLevel
 
 __author__ = 'colla69'
 
@@ -24,6 +25,7 @@ def prev_player():
 
 
 def search_player(text):
+    LOG.info('cmus-remote -C "/' + text+'"')
     os.system('cmus-remote -C "/' + text+'"')
     os.system('cmus-remote -C "win-activate"')
 
@@ -61,10 +63,22 @@ def changeshuffling():
         os.system('cmus-remote -C "set shuffle=true"')
 
 
-class Localmusicplayer(MycroftSkill):
+class Localmusicplayer(CommonPlaySkill):
+    def CPS_match_query_phrase(self, phrase):
+        library = open('/home/cola/.config/cmus/lib.pl')
+        for line in library:
+            mySongs.append(line.strip())
+
+        LOG.info(mySongs)
+
+        return phrase, CPSMatchLevel.TITLE
+
+    def CPS_start(self, phrase, data):
+        #search_player(phrase)
+        pass
 
     def __init__(self):
-        super(Localmusicplayer, self).__init__(name="TemplateSkill")
+        super().__init__(name="TemplateSkill")
         # Initialize working variables used within the skill.
         self.music_source = self.settings.get("musicsource", "")
         # init cmus player
@@ -119,6 +133,7 @@ class Localmusicplayer(MycroftSkill):
     def handle_search_music_intent(self, message):
         songtoplay = message.data.get("SongToPlay")
         self.activate_player()
+        LOG.info("playing "+songtoplay)
         search_player(songtoplay)
 
     def start_player(self):
@@ -143,8 +158,9 @@ class Localmusicplayer(MycroftSkill):
         return False
 
     def stop(self):
-        if getrunning():
-          self.stop_player()
+        pass
+        #if getrunning():
+        #  self.stop_player()
 
 
 def create_skill():
