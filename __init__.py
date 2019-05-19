@@ -1,11 +1,21 @@
 import os
 import time
+from collections import defaultdict
+
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_file_handler, intent_handler
 from mycroft.util.log import LOG
 from mycroft.skills.common_play_skill import CommonPlaySkill, CPSMatchLevel
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+import eyed3
+from json import load,dump
+
 
 __author__ = 'colla69'
+
+
+eyed3.log.setLevel("ERROR")
 
 
 def play_player():
@@ -25,15 +35,15 @@ def prev_player():
 
 
 def search_player(text):
-    LOG.info('cmus-remote -C "/' + text+'"')
-    os.system('cmus-remote -C "/' + text+'"')
+    LOG.info('cmus-remote -C "/' + text + '"')
+    os.system('cmus-remote -C "/' + text + '"')
     os.system('cmus-remote -C "win-activate"')
 
 
 def refresh_library(path):
     os.system('cmus-remote -C clear')
-    LOG.info('reloading music files from: '+path)
-    os.system('cmus-remote -C "add '+path+'"')
+    LOG.info('reloading music files from: ' + path)
+    os.system('cmus-remote -C "add ' + path + '"')
 
 
 def show_player():
@@ -68,13 +78,11 @@ class Localmusicplayer(CommonPlaySkill):
         library = open('/home/cola/.config/cmus/lib.pl')
         for line in library:
             mySongs.append(line.strip())
-
         LOG.info(mySongs)
-
         return phrase, CPSMatchLevel.TITLE
 
     def CPS_start(self, phrase, data):
-        #search_player(phrase)
+        # search_player(phrase)
         pass
 
     def __init__(self):
@@ -83,6 +91,8 @@ class Localmusicplayer(CommonPlaySkill):
         self.music_source = self.settings.get("musicsource", "")
         # init cmus player
         self.activate_player()
+
+        self.mp = MyPlayer()
 
     def getspoken_shufflestate(self):
         if shufflin():
@@ -133,7 +143,7 @@ class Localmusicplayer(CommonPlaySkill):
     def handle_search_music_intent(self, message):
         songtoplay = message.data.get("SongToPlay")
         self.activate_player()
-        LOG.info("playing "+songtoplay)
+        LOG.info("playing " + songtoplay)
         search_player(songtoplay)
 
     def start_player(self):
@@ -159,8 +169,107 @@ class Localmusicplayer(CommonPlaySkill):
 
     def stop(self):
         pass
-        #if getrunning():
+        # if getrunning():
         #  self.stop_player()
+
+
+class MyPlayer:
+
+    def __init__(self):
+        self.artists = defaultdict(list)
+        self.albums = defaultdict(list)
+        self.titles = defaultdict(list)
+        self.rootDir = '/media/cola/Data/Music/'
+        # rootDir = '/media/cola/Data/Music/New'
+        data = self.load_data()
+        for artist in data:
+            for album in data[artist]:
+                for song in data[artist][album]:
+                    title = song[0]
+                    file = song[1]
+                    self.albums[album].append(file)
+                    self.artists[artist].append(file)
+                    self.titles[title].append(file)
+
+    def load_data(self):
+        LOG.info("load")
+        if os.path.isfile("data.json"):
+            LOG.info("loading")
+            files_dict, f_count, data, errors = self.get_data_from_dir(self.rootDir)
+            self.json_save(data, "data.json")
+            return data
+        else:
+            LOG.info("json")
+            return self.json_load("data.json")
+
+    def json_save(self, data, fname):
+        with open(fname, 'w') as fp:
+            dump(data, fp)
+
+    def json_load(self, fname):
+        with open(fname, 'r') as fp:
+            return load(fp)
+
+    def get_data_from_dir(self, rootdir):
+        music_ext = ['MP3', 'm3u', 'flac', 'wma', 'Mp3', 'mp3']
+        files_dict = defaultdict(list)
+        f_count = 0
+        e_count = 0
+        songs = defaultdict()
+        songs['noArtist'] = {}
+        songs['noArtist']['noAlbum'] = []
+
+        for dirName, subdirList, fileList in os.walk(rootdir):
+            for f_name in fileList:
+                file_ext = f_name.split('.')[1:]
+                # if music file
+                if file_ext[0] in music_ext:
+                    f_count += 1
+                    file = dirName + '/' + f_name
+                    audiofile = eyed3.load(path=file)
+                    artist = ""
+                    album = ""
+                    title = ""
+                    try:
+                        artist = audiofile.tag.artist
+                        album = audiofile.tag.album
+                        title = audiofile.tag.title
+                        song = {}
+                        if title is None:
+                            song["noTitle"] = file
+                            songs['noArtist']['noAlbum'].append(["", file])
+                            continue
+
+                        if artist is None:
+                            songs['noArtist']['noAlbum'].append([title, file])
+                            continue
+                        elif songs.get(artist) is None:
+                            songs[artist] = {}
+                            songs[artist]['noAlbum'] = []
+
+                        if album == None:
+                            if songs[artist].get('noAlbum') is None:
+                                songs[artist]['noAlbum'] = []
+                            songs[artist]['noAlbum'].append([title, file])
+                        else:
+                            if songs[artist].get(album) is None:
+                                songs[artist][album] = []
+                            songs[artist][album].append([title, file])
+
+                    except AttributeError as error:
+                        e_count += 1
+                        continue
+        return files_dict, f_count, songs, e_count
+
+    def title_search(self, phrase):
+        probabilities = process.extractOne(utterance, titles, scorer=fuzz.ratio)
+        LOG.info("Title Probabilities: " + str(probabilities))
+        if probabilities[1] > 70:
+            title = probabilities[0]
+            confidence = probabilities[1]
+            return title, confidence
+        else:
+            return "Null", 0
 
 
 def create_skill():
