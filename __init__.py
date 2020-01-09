@@ -64,8 +64,10 @@ def changeshuffling():
 
 
 class Localmusicplayer(CommonPlaySkill):
+
     def CPS_match_query_phrase(self, phrase):
         library = open('/home/cola/.config/cmus/lib.pl')
+        mySongs = []
         for line in library:
             mySongs.append(line.strip())
 
@@ -74,7 +76,7 @@ class Localmusicplayer(CommonPlaySkill):
         return phrase, CPSMatchLevel.TITLE
 
     def CPS_start(self, phrase, data):
-        #search_player(phrase)
+        search_player(phrase)
         pass
 
     def __init__(self):
